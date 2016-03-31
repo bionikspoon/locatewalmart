@@ -15,5 +15,9 @@
   },
   "note": {
     "dataSource": "db"
+  },
+  "store": {
+    "dataSource": "mymongo",
+    "public": true
   }
 }

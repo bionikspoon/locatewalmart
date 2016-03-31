@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Walmart Stores</title>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+  <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    html, body, #map {
+      height: 100%;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    .leaflet-container .leaflet-control-zoom {
+      margin-left: 13px;
+      margin-top: 70px;
+    }
+
+    #map {
+      z-index: 1;
+    }
+
+    #title {
+      z-index: 2;
+      position: absolute;
+      left: 10px;
+    }
+
+  </style>
+</head>
+<body>
+<h1 id="title">Walmart Stores</h1>
+<div id="map"></div>
+
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script>
+  var center = new L.LatLng(39.83, -98.58);
+  var zoom = 5;
+  var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
+  var map = L.map('map').setView(center, zoom);
+  var markerLayerGroup = L.layerGroup().addTo(map);
+  L
+    .tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: attribution
+    })
+    .addTo(map);
+
+  function getPins(e) {
+    url = "http://localhost:3000/api/stores";
+
+    $.get(url, pinTheMap, "json");
+  }
+
+  function pinTheMap(data) {
+//    clear the current pins
+    map.removeLayer(markerLayerGroup);
+//    add new pins
+    var markerArray = [];
+    var lastNumber = 0;
+    for (var i = 0; i < data.length; i++) {
+      var store = data[ i ];
+      if (store.latitude.length > 0 && store.longitude.length > 0) {
+        markerArray.push(L.marker([ store.latitude, store.longitude ]));
+      }
+    }
+    markerLayerGroup = L.layerGroup(markerArray).addTo(map);
+  }
+  map.whenReady(getPins);
+
+</script>
+</body>
+</html>
